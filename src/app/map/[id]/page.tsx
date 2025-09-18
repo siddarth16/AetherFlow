@@ -188,7 +188,7 @@ export default function MapPage() {
             <Brain className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <h2 className="text-xl font-semibold mb-2">Map not found</h2>
             <p className="text-muted-foreground mb-4">
-              This mind map doesn't exist or has been deleted.
+              This mind map doesn&apos;t exist or has been deleted.
             </p>
             <Button onClick={() => router.push('/')}>
               <Home className="w-4 h-4 mr-2" />

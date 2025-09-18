@@ -161,7 +161,7 @@ export default function HomePage() {
             <Card className="p-8">
               <CardContent>
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium mb-4">What's on your mind?</h3>
+                  <h3 className="text-lg font-medium mb-4">What&apos;s on your mind?</h3>
                   <div className="flex space-x-4">
                     <Input
                       placeholder="Start a podcast, Plan a trip to Japan, Learn Python..."
