@@ -27,12 +27,14 @@ export default function HomePage() {
     setIsCreating(true)
 
     try {
-      // Reset store for new map
+      // Create new map with unique ID
+      const mapId = uuidv4()
+
+      // Clear any existing data first
       reset()
 
-      // Create new map
       const newMap = {
-        id: uuidv4(),
+        id: mapId,
         user_id: user?.id || null,
         title: seedIdea.trim(),
         description: `Mind map started with: ${seedIdea.trim()}`,
@@ -44,9 +46,9 @@ export default function HomePage() {
 
       setCurrentMap(newMap)
 
-      // Create root node
+      // Create root node centered on canvas
       addNode({
-        map_id: newMap.id,
+        map_id: mapId,
         parent_id: null,
         type: 'idea',
         title: seedIdea.trim(),
@@ -57,11 +59,11 @@ export default function HomePage() {
           expanded: false,
           aiGenerated: false,
         },
-        position: { x: 0, y: 0 },
+        position: { x: 400, y: 300 }, // Center the initial node
       })
 
-      // Navigate to map editor
-      router.push(`/map/${newMap.id}`)
+      // Navigate to map editor with the new map ID
+      router.push(`/map/${mapId}`)
     } catch (error) {
       console.error('Error creating map:', error)
     } finally {

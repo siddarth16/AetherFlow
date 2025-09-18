@@ -55,10 +55,13 @@ export function MindMapCanvas({
   const [panStart, setPanStart] = useState<Position>({ x: 0, y: 0 })
 
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
-    if (e.target === canvasRef.current) {
+    // Check if clicking on canvas background (not on a node)
+    const target = e.target as HTMLElement
+    if (target === canvasRef.current || target.closest('.canvas-background')) {
       setSelectedNode(null)
       setIsPanning(true)
       setPanStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y })
+      e.preventDefault()
     }
   }
 
@@ -150,7 +153,7 @@ export function MindMapCanvas({
     >
       {/* Grid Background */}
       <div
-        className="absolute inset-0 opacity-10"
+        className="canvas-background absolute inset-0 opacity-10"
         style={{
           backgroundImage: `
             radial-gradient(circle at 1px 1px, #8B5CF6 1px, transparent 0)

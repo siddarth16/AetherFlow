@@ -6,6 +6,7 @@ import { useMapStore } from '@/lib/stores/mapStore'
 import { useAuthStore } from '@/lib/stores/authStore'
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas'
 import { ChatInterface } from '@/components/chat/ChatInterface'
+import { KanbanBoard } from '@/components/kanban/KanbanBoard'
 import { Button, Loading, Modal, Input, Card, CardContent } from '@/components/ui'
 import {
   Brain,
@@ -172,6 +173,27 @@ export default function MapPage() {
     setManualNodeData({ parentId: '', title: '', description: '', type: 'idea' })
   }
 
+  const handleSave = () => {
+    saveToLocalStorage()
+    // TODO: Save to Supabase if authenticated
+  }
+
+  const handleShare = async () => {
+    const url = window.location.href
+    try {
+      await navigator.clipboard.writeText(url)
+      // TODO: Add toast notification
+      console.log('Link copied to clipboard!')
+    } catch (error) {
+      console.error('Failed to copy link:', error)
+    }
+  }
+
+  const handleDownload = () => {
+    // TODO: Implement download functionality
+    console.log('Download feature coming soon!')
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -246,15 +268,15 @@ export default function MapPage() {
                 ))}
               </div>
 
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleSave}>
                 <Save className="w-5 h-5" />
               </Button>
 
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleShare}>
                 <Share2 className="w-5 h-5" />
               </Button>
 
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleDownload}>
                 <Download className="w-5 h-5" />
               </Button>
 
@@ -280,17 +302,7 @@ export default function MapPage() {
         )}
 
         {viewMode === 'board' && (
-          <div className="h-full flex items-center justify-center">
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Grid3X3 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-2">Kanban Board</h3>
-                <p className="text-muted-foreground">
-                  Task board view coming soon...
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          <KanbanBoard />
         )}
 
         {viewMode === 'notes' && (

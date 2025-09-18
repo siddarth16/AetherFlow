@@ -93,3 +93,74 @@ export function getNodeIcon(type: string): string {
       return '◯'
   }
 }
+
+export function calculateNodeSize(title: string, description?: string): { width: number; height: number } {
+  // Estimate text width based on character count
+  const titleLength = title.length
+  const descLength = description?.length || 0
+
+  // Base dimensions
+  let width = Math.max(200, titleLength * 8 + 40) // Min 200px, ~8px per char + padding
+  let height = 120 // Base height
+
+  // Adjust for description
+  if (description && descLength > 0) {
+    const descLines = Math.ceil(descLength / 30) // ~30 chars per line
+    height += descLines * 20 // ~20px per line
+  }
+
+  // Adjust for long titles
+  if (titleLength > 25) {
+    const titleLines = Math.ceil(titleLength / 25)
+    height += (titleLines - 1) * 24 // ~24px per title line
+  }
+
+  // Max constraints
+  width = Math.min(width, 400)
+  height = Math.min(height, 200)
+
+  return { width, height }
+}
+
+export function findNonOverlappingPosition(
+  parentPosition: { x: number; y: number },
+  existingNodes: Array<{ position: { x: number; y: number }; title: string; description?: string }>,
+  nodeIndex: number,
+  totalSiblings: number
+): { x: number; y: number } {
+  const baseDistance = 250
+  const angle = (2 * Math.PI * nodeIndex) / totalSiblings
+
+  // Calculate ideal position in circle around parent
+  let x = parentPosition.x + Math.cos(angle) * baseDistance
+  let y = parentPosition.y + Math.sin(angle) * baseDistance
+
+  // Check for overlaps and adjust
+  let attempts = 0
+  const maxAttempts = 10
+
+  while (attempts < maxAttempts) {
+    let hasOverlap = false
+
+    for (const existingNode of existingNodes) {
+      const distance = calculateDistance({ x, y }, existingNode.position)
+      if (distance < 200) { // Minimum distance between nodes
+        hasOverlap = true
+        break
+      }
+    }
+
+    if (!hasOverlap) {
+      break
+    }
+
+    // Adjust position by moving further out
+    const newDistance = baseDistance + (attempts + 1) * 100
+    x = parentPosition.x + Math.cos(angle) * newDistance
+    y = parentPosition.y + Math.sin(angle) * newDistance
+
+    attempts++
+  }
+
+  return { x, y }
+}

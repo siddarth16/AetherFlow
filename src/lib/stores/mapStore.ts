@@ -11,6 +11,7 @@ import {
   TaskPriority
 } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
+import { findNonOverlappingPosition } from '@/lib/utils'
 
 interface MapState {
   // Current map and nodes
@@ -119,19 +120,27 @@ export const useMapStore = create<MapState>()(
         if (!parentNode) return
 
         const parentPosition = parentNode.position as unknown as Position
-        const newNodes = childNodes.map((nodeData, index) => ({
-          id: uuidv4(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          children: [],
-          ...nodeData,
-          parent_id: id,
-          map_id: parentNode.map_id,
-          position: {
-            x: parentPosition.x + (index - childNodes.length / 2) * 200,
-            y: parentPosition.y + 150
-          },
-        }))
+        const existingNodes = get().nodes
+
+        const newNodes = childNodes.map((nodeData, index) => {
+          const position = findNonOverlappingPosition(
+            parentPosition,
+            existingNodes,
+            index,
+            childNodes.length
+          )
+
+          return {
+            id: uuidv4(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            children: [],
+            ...nodeData,
+            parent_id: id,
+            map_id: parentNode.map_id,
+            position,
+          }
+        })
 
         set((state) => ({
           nodes: [...state.nodes, ...newNodes]
