@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 15% 95%;
+    --foreground: 220 15% 15%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 220 14% 90%;
+    --secondary-foreground: 220 15% 25%;
+    --muted: 220 14% 95%;
+    --muted-foreground: 220 15% 40%;
+    --accent: 220 14% 90%;
+    --accent-foreground: 220 15% 25%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 85%;
+    --input: 220 13% 85%;
+    --ring: 262 83% 58%;
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 224 20% 8%;
+    --foreground: 0 0% 95%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 224 20% 15%;
+    --secondary-foreground: 0 0% 80%;
+    --muted: 224 20% 12%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 224 20% 15%;
+    --accent-foreground: 0 0% 80%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 224 20% 20%;
+    --input: 224 20% 20%;
+    --ring: 262 83% 58%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .claymorphic {
+    @apply bg-white/20 backdrop-blur-clay border border-white/30 shadow-clay;
+  }
+
+  .claymorphic-inset {
+    @apply shadow-clay-inset;
+  }
+
+  .claymorphic-hover {
+    @apply transition-all duration-300 hover:shadow-clay-hover hover:scale-105;
+  }
+
+  .glass-effect {
+    @apply bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-xl border border-white/20;
+  }
+
+  .mind-map-node {
+    @apply claymorphic claymorphic-hover rounded-3xl p-6 cursor-pointer select-none;
+    @apply transform transition-all duration-300 ease-out;
+  }
+
+  .mind-map-node:hover {
+    @apply scale-105 shadow-clay-hover;
+  }
+
+  .mind-map-node.selected {
+    @apply ring-2 ring-primary ring-opacity-60;
+  }
+}
