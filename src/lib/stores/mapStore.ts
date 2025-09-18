@@ -123,9 +123,16 @@ export const useMapStore = create<MapState>()(
         const existingNodes = get().nodes
 
         const newNodes = childNodes.map((nodeData, index) => {
+          // Convert existing nodes to the expected format for overlap checking
+          const existingNodesFormatted = existingNodes.map(node => ({
+            position: node.position as unknown as { x: number; y: number },
+            title: node.title,
+            description: node.description || undefined,
+          }))
+
           const position = findNonOverlappingPosition(
             parentPosition,
-            existingNodes,
+            existingNodesFormatted,
             index,
             childNodes.length
           )
