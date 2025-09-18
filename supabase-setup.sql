@@ -1,4 +1,7 @@
--- Enable UUID extension
+-- AetherFlow Database Setup for Supabase
+-- Run this in your Supabase SQL Editor
+
+-- Enable UUID extension (usually already enabled in Supabase)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create users table (extends auth.users)
@@ -72,27 +75,27 @@ ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.snapshots ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for users table
-CREATE POLICY "Users can view own profile" ON public.users
+CREATE POLICY "users_select_own" ON public.users
     FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY "Users can update own profile" ON public.users
+CREATE POLICY "users_update_own" ON public.users
     FOR UPDATE USING (auth.uid() = id);
 
 -- RLS Policies for maps table
-CREATE POLICY "Users can view own maps" ON public.maps
+CREATE POLICY "maps_select_accessible" ON public.maps
     FOR SELECT USING (auth.uid() = user_id OR is_public = TRUE);
 
-CREATE POLICY "Users can insert own maps" ON public.maps
+CREATE POLICY "maps_insert_own" ON public.maps
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update own maps" ON public.maps
+CREATE POLICY "maps_update_own" ON public.maps
     FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete own maps" ON public.maps
+CREATE POLICY "maps_delete_own" ON public.maps
     FOR DELETE USING (auth.uid() = user_id);
 
 -- RLS Policies for nodes table
-CREATE POLICY "Users can view nodes of accessible maps" ON public.nodes
+CREATE POLICY "nodes_select_accessible" ON public.nodes
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.maps
@@ -101,7 +104,7 @@ CREATE POLICY "Users can view nodes of accessible maps" ON public.nodes
         )
     );
 
-CREATE POLICY "Users can insert nodes in own maps" ON public.nodes
+CREATE POLICY "nodes_insert_own_maps" ON public.nodes
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.maps
@@ -110,7 +113,7 @@ CREATE POLICY "Users can insert nodes in own maps" ON public.nodes
         )
     );
 
-CREATE POLICY "Users can update nodes in own maps" ON public.nodes
+CREATE POLICY "nodes_update_own_maps" ON public.nodes
     FOR UPDATE USING (
         EXISTS (
             SELECT 1 FROM public.maps
@@ -119,7 +122,7 @@ CREATE POLICY "Users can update nodes in own maps" ON public.nodes
         )
     );
 
-CREATE POLICY "Users can delete nodes in own maps" ON public.nodes
+CREATE POLICY "nodes_delete_own_maps" ON public.nodes
     FOR DELETE USING (
         EXISTS (
             SELECT 1 FROM public.maps
@@ -129,7 +132,7 @@ CREATE POLICY "Users can delete nodes in own maps" ON public.nodes
     );
 
 -- RLS Policies for tasks table
-CREATE POLICY "Users can view tasks of accessible maps" ON public.tasks
+CREATE POLICY "tasks_select_accessible" ON public.tasks
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.nodes
@@ -139,7 +142,7 @@ CREATE POLICY "Users can view tasks of accessible maps" ON public.tasks
         )
     );
 
-CREATE POLICY "Users can insert tasks in own maps" ON public.tasks
+CREATE POLICY "tasks_insert_own_maps" ON public.tasks
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.nodes
@@ -149,7 +152,7 @@ CREATE POLICY "Users can insert tasks in own maps" ON public.tasks
         )
     );
 
-CREATE POLICY "Users can update tasks in own maps" ON public.tasks
+CREATE POLICY "tasks_update_own_maps" ON public.tasks
     FOR UPDATE USING (
         EXISTS (
             SELECT 1 FROM public.nodes
@@ -159,7 +162,7 @@ CREATE POLICY "Users can update tasks in own maps" ON public.tasks
         )
     );
 
-CREATE POLICY "Users can delete tasks in own maps" ON public.tasks
+CREATE POLICY "tasks_delete_own_maps" ON public.tasks
     FOR DELETE USING (
         EXISTS (
             SELECT 1 FROM public.nodes
@@ -170,7 +173,7 @@ CREATE POLICY "Users can delete tasks in own maps" ON public.tasks
     );
 
 -- RLS Policies for snapshots table
-CREATE POLICY "Users can view snapshots of accessible maps" ON public.snapshots
+CREATE POLICY "snapshots_select_accessible" ON public.snapshots
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.maps
@@ -179,7 +182,7 @@ CREATE POLICY "Users can view snapshots of accessible maps" ON public.snapshots
         )
     );
 
-CREATE POLICY "Users can insert snapshots in own maps" ON public.snapshots
+CREATE POLICY "snapshots_insert_own_maps" ON public.snapshots
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.maps
@@ -188,7 +191,7 @@ CREATE POLICY "Users can insert snapshots in own maps" ON public.snapshots
         )
     );
 
-CREATE POLICY "Users can delete snapshots in own maps" ON public.snapshots
+CREATE POLICY "snapshots_delete_own_maps" ON public.snapshots
     FOR DELETE USING (
         EXISTS (
             SELECT 1 FROM public.maps
@@ -222,14 +225,18 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Add updated_at triggers
-CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users
+CREATE OR REPLACE TRIGGER update_users_updated_at
+    BEFORE UPDATE ON public.users
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
-CREATE TRIGGER update_maps_updated_at BEFORE UPDATE ON public.maps
+CREATE OR REPLACE TRIGGER update_maps_updated_at
+    BEFORE UPDATE ON public.maps
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
-CREATE TRIGGER update_nodes_updated_at BEFORE UPDATE ON public.nodes
+CREATE OR REPLACE TRIGGER update_nodes_updated_at
+    BEFORE UPDATE ON public.nodes
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
-CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON public.tasks
+CREATE OR REPLACE TRIGGER update_tasks_updated_at
+    BEFORE UPDATE ON public.tasks
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

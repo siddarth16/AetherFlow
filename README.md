@@ -97,7 +97,7 @@ AetherFlow works in local-only mode by default. For cloud features:
 
 2. **Run the database schema**
    ```sql
-   -- Copy and paste the contents of supabase-schema.sql
+   -- Copy and paste the contents of supabase-setup.sql
    -- into your Supabase SQL editor
    ```
 
